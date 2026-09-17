@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afeto em Código - Lumi</title>
+    
+    <!-- Configurações para Instalação do Web App (PWA) e Ícones apontando para a pasta 'images' -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/jpeg" href="images/lumi_icon.jpeg">
+    <link rel="apple-touch-icon" href="images/lumi_icon.jpeg">
+    <meta name="theme-color" content="#297be6">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Estilos Gerais */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #d3ebff 0%, #a6d5ff 100%); height: 100vh; display: flex; justify-content: center; align-items: center; color: #1a4d8c; overflow: hidden; }
+        
+        .container { background-color: white; width: 100%; max-width: 450px; height: 90vh; border-radius: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); overflow: hidden; position: relative; display: flex; flex-direction: column; }
+        .screen-content { padding: 20px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+        
+        .screen { display: none; flex-direction: column; height: 100%; animation: fadeIn 0.4s ease-in-out; }
+        .screen.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .header { text-align: center; margin-bottom: 20px; margin-top: 10px; }
+        .header h1 { font-size: 28px; color: #0b458f; }
+        .header h1 span { color: #d13a3a; }
+
+        /* Identidade Visual - Imagem do Lumi */
+        .lumi-img {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e1f0ff;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            margin: 0 auto;
+            display: block;
+        }
+
+        .lumi-img-small {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #b3cbf2;
+            margin: 0 auto 15px auto;
+            display: block;
+        }
+
+        /* Efeito de pulso para tela de Bluetooth */
+        .pulse-animation { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(74, 144, 226, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(74, 144, 226, 0); }
+        }
+
+        /* Botões Base */
+        .btn-primary { background-color: #297be6; color: white; border: none; padding: 15px; border-radius: 25px; font-size: 18px; font-weight: bold; cursor: pointer; transition: transform 0.2s; margin-top: 10px; }
+        .btn-primary:hover { transform: scale(1.02); }
+        
+        /* Navbar Superior (Voltar) */
+        .top-nav { display: flex; align-items: center; padding: 15px 20px; background-color: #f8fbff; border-bottom: 2px solid #e1f0ff; }
+        .back-btn { background: none; border: none; font-size: 16px; color: #1a4d8c; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .back-btn:hover { color: #297be6; }
+        .nav-title { margin-left: auto; margin-right: auto; font-weight: bold; font-size: 18px; padding-right: 30px; }
+
+        /* Cores das Categorias */
+        .bg-historias { background-color: #b3cbf2; } 
+        .bg-respiracao { background-color: #bdf2c9; }
+        .bg-emocoes { background-color: #fde8a1; }
+        .bg-jogos { background-color: #ffc8ce; }
+
+        /* Menu Principal */
+        .menu-btn { display: flex; align-items: center; padding: 20px; border-radius: 20px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; transition: transform 0.2s; color: #1a4d8c; margin-bottom: 15px; text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .menu-btn i { font-size: 24px; width: 40px; text-align: center; margin-right: 15px; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 50%; color: #1a4d8c; }
+
+        /* Interação: História */
+        .story-container { text-align: center; padding: 20px; background: #fff; border-radius: 20px; border: 3px solid #b3cbf2; min-height: 250px; display: flex; flex-direction: column; justify-content: center; }
+        .story-text { font-size: 20px; font-weight: 500; line-height: 1.4; margin-bottom: 20px; }
+        
+        /* Interação: Respiração */
+        .breathe-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+        .breathe-circle { width: 150px; height: 150px; background-color: #bdf2c9; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 60px; transition: all 3s ease-in-out; margin: 40px 0; box-shadow: 0 0 20px rgba(189, 242, 201, 0.8); }
+        .breathe-circle.inhale { transform: scale(1.8); background-color: #93e8a6; }
+        .breathe-text { font-size: 24px; font-weight: bold; text-align: center; }
+
+        /* Interação: Emoções */
+        .emotions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .emotion-btn { background: #fff; border: 3px solid #fde8a1; border-radius: 20px; padding: 20px 10px; font-size: 40px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .emotion-btn span { font-size: 16px; font-weight: bold; color: #1a4d8c; }
+        .emotion-btn:active { transform: scale(0.95); background: #fde8a1; }
+        .lumi-response { margin-top: 25px; padding: 20px; background: #f8fbff; border-radius: 15px; font-size: 18px; text-align: center; font-weight: bold; display: none; }
+
+        /* Interação: Jogos (Bolhas) */
+        .game-area { position: relative; flex: 1; background: #fff; border-radius: 20px; border: 3px solid #ffc8ce; overflow: hidden; margin-top: 10px; }
+        .bubble { position: absolute; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 200, 206, 0.6)); border: 1px solid rgba(255, 200, 206, 0.8); cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 24px; animation: floatUp 4s infinite linear; }
+        @keyframes floatUp { 0% { transform: translateY(100px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-300px); opacity: 0; } }
+        .game-msg { text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- TELA 1: LOGIN -->
+        <div id="screen-login" class="screen active">
+            <div class="screen-content" style="justify-content: center;">
+                <div class="header">
+                    <h1><span>Afeto</span> em Código</h1>
+                    <p>Pequenos momentos, grandes conquistas!</p>
+                </div>
+                
+                <!-- Imagem Oficial do Lumi no Login -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <img src="images/lumi_icon.jpeg" alt="Lumi Robô" class="lumi-img">
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <input type="text" id="childName" placeholder="Como você se chama?" style="padding: 15px; border: 2px solid #e1f0ff; border-radius: 15px; font-size: 16px;">
+                    <button class="btn-primary" onclick="goToBluetooth()">Começar <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TELA 2: BLUETOOTH -->
+        <div id="screen-bluetooth" class="screen">
+            <div class="screen-content" style="align-items: center; justify-content: center; text-align: center;">
+                <h2>Conectar ao Lumi</h2>
+                
+                <!-- Imagem do Lumi pulsando simulando a conexão -->
+                <div style="margin: 40px 0;">
+                    <img src="images/lumi_icon.jpeg" alt="Lumi" class="lumi-img pulse-animation" id="bt-lumi-img">
+                </div>
+                
+                <p id="bt-status-text" style="font-size: 18px; margin-bottom: 20px;">Toque para buscar o robô Lumi.</p>
+                <button class="btn-primary" id="bt-btn" onclick="simulateConnection()" style="width: 100%;">Parear</button>
+            </div>
+        </div>
+
+        <!-- TELA 3: MENU PRINCIPAL -->
+        <div id="screen-menu" class="screen">
+            <div class="screen-content">
+                <div class="header" style="margin-bottom: 10px;">
+                    <h2 style="font-size: 24px;">Lumi</h2>
+                </div>
+                <div style="text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 25px;">
+                    <i class="far fa-smile" style="color: #4a90e2;"></i> Olá, <span id="display-name">Amiguinho</span>!<br>O que vamos fazer hoje?
+                </div>
+                
+                <button class="menu-btn bg-historias" onclick="openActivity('historias')">
+                    <i class="fas fa-book-open"></i> Histórias terapêuticas
+                </button>
+                <button class="menu-btn bg-respiracao" onclick="openActivity('respiracao')">
+                    <i class="fas fa-lungs"></i> Respiração guiada
+                </button>
+                <button class="menu-btn bg-emocoes" onclick="openActivity('emocoes')">
+                    <i class="far fa-smile-beam"></i> Reconhecimento de emoções
+                </button>
+                <button class="menu-btn bg-jogos" onclick="openActivity('jogos')">
+                    <i class="fas fa-gamepad"></i> Jogos de ansiedade
+                </button>
+            </div>
+        </div>
+
+        <!-- ATIVIDADE 1: HISTÓRIAS -->
+        <div id="screen-historias" class="screen">
+            <div class="top-nav bg-historias">
+                <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <div class="nav-title">História do Lumi</div>
+            </div>
+            <div class="screen-content" style="justify-content: center;">
+                <div class="story-container">
+                    <!-- Imagem do Lumi contando a história -->
+                    <img src="images/lumi_icon.jpeg" alt="Lumi" class="lumi-img-small" id="story-img">
+                    <div class="story-text" id="story-text">O Lumi também já precisou vir ao hospital para cuidar de sua bateria.</div>
+                    <button class="btn-primary" onclick="nextStory()" style="background-color: #5b8add;">Próxima Página</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ATIVIDADE 2: RESPIRAÇÃO -->
+        <div id="screen-respiracao" class="screen">
+            <div class="top-nav bg-respiracao">
+                <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <div class="nav-title">Vamos Respirar</div>
+            </div>
+            <div class="screen-content">
+                <div class="breathe-container">
+                    <div class="breathe-text" id="breathe-instruction">Siga o Lumi!</div>
+                    <div class="breathe-circle" id="breathe-circle">🌸</div>
+                    <button class="btn-primary" id="btn-start-breathe" onclick="startBreathing()" style="background-color: #4CAF50;">Iniciar Respiração</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ATIVIDADE 3: EMOÇÕES -->
+        <div id="screen-emocoes" class="screen">
+            <div class="top-nav bg-emocoes">
+                <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <div class="nav-title">Como se sente?</div>
+            </div>
+            <div class="screen-content">
+                <h3 style="text-align: center; color: #b89c25; margin-top: 10px;">Toque no rostinho:</h3>
+                <div class="emotions-grid">
+                    <button class="emotion-btn" onclick="checkEmotion('feliz')">😁 <span>Feliz</span></button>
+                    <button class="emotion-btn" onclick="checkEmotion('triste')">😢 <span>Triste</span></button>
+                    <button class="emotion-btn" onclick="checkEmotion('medo')">😨 <span>Com Medo</span></button>
+                    <button class="emotion-btn" onclick="checkEmotion('bravo')">😡 <span>Bravo</span></button>
+                </div>
+                <div class="lumi-response" id="lumi-response"></div>
+            </div>
+        </div>
+
+        <!-- ATIVIDADE 4: JOGOS (Bolhas) -->
+        <div id="screen-jogos" class="screen">
+            <div class="top-nav bg-jogos">
+                <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <div class="nav-title">Estoure as Bolhas</div>
+            </div>
+            <div class="screen-content" style="display: flex; flex-direction: column;">
+                <div class="game-msg" id="game-score">Toque nas bolhas para estourar! 🧼</div>
+                <div class="game-area" id="game-area"></div>
+                <button class="btn-primary" onclick="startGame()" style="background-color: #e57373; margin-top: 15px;">Jogar Novamente</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- NAVEGAÇÃO GERAL ---
+        let currentScreen = 'screen-login';
+        let breathInterval;
+        let gameInterval;
+
+        function switchScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            currentScreen = id;
+        }
+
+        function goToBluetooth() {
+            const name = document.getElementById('childName').value || 'Amiguinho';
+            document.getElementById('display-name').textContent = name;
+            switchScreen('screen-bluetooth');
+        }
+
+        function simulateConnection() {
+            const btn = document.getElementById('bt-btn');
+            const txt = document.getElementById('bt-status-text');
+            const img = document.getElementById('bt-lumi-img');
+            
+            if (btn) {
+                btn.disabled = true; 
+                btn.style.background = '#ccc'; 
+            }
+            
+            if (txt) txt.textContent = "Buscando o Lumi...";
+            
+            setTimeout(() => {
+                if (txt) txt.textContent = "Conectando..."; 
+                
+                if (img) {
+                    img.style.borderColor = "#28a745"; 
+                }
+                
+                setTimeout(() => {
+                    if (txt) txt.textContent = "Conectado!";
+                    if (img) img.classList.remove('pulse-animation'); 
+                    
+                    setTimeout(() => switchScreen('screen-menu'), 1000);
+                }, 1500);
+            }, 1500);
+        }
+
+        function openActivity(activity) {
+            switchScreen('screen-' + activity);
+            if(activity === 'jogos') startGame();
+        }
+
+        function goBack() {
+            clearInterval(breathInterval);
+            clearInterval(gameInterval);
+            
+            const area = document.getElementById('game-area');
+            if (area) area.innerHTML = ''; 
+            
+            const btnBreathe = document.getElementById('btn-start-breathe');
+            if (btnBreathe) btnBreathe.style.display = 'block';
+            
+            const breatheInstruction = document.getElementById('breathe-instruction');
+            if (breatheInstruction) breatheInstruction.textContent = 'Siga o Lumi!';
+            
+            const breatheCircle = document.getElementById('breathe-circle');
+            if (breatheCircle) {
+                breatheCircle.classList.remove('inhale');
+                breatheCircle.textContent = '🌸';
+            }
+            
+            const lumiResp = document.getElementById('lumi-response');
+            if (lumiResp) lumiResp.style.display = 'none';
+            
+            storyIndex = 0; 
+            updateStory();
+
+            switchScreen('screen-menu');
+        }
+
+        // --- LÓGICA: HISTÓRIAS ---
+        const storySteps = [
+            { txt: "O Lumi também já precisou vir ao hospital para cuidar de sua bateria." },
+            { txt: "No começo ele ficou com medo das máquinas, elas faziam 'BIP BIP'..." },
+            { txt: "Mas ele descobriu que as enfermeiras e médicos são super-heróis disfarçados!" },
+            { txt: "Ele ganhou um curativo mágico na patinha e logo voltou a brincar feliz!" }
+        ];
+        let storyIndex = 0;
+        function nextStory() {
+            storyIndex++;
+            if(storyIndex >= storySteps.length) storyIndex = 0;
+            updateStory();
+        }
+        function updateStory() {
+            const storyText = document.getElementById('story-text');
+            if (storyText) storyText.textContent = storySteps[storyIndex].txt;
+        }
+
+        // --- LÓGICA: RESPIRAÇÃO ---
+        function startBreathing() {
+            const btnBreathe = document.getElementById('btn-start-breathe');
+            if (btnBreathe) btnBreathe.style.display = 'none';
+            
+            const circle = document.getElementById('breathe-circle');
+            const text = document.getElementById('breathe-instruction');
+            
+            function breathCycle() {
+                if (text) text.textContent = "Cheire a florzinha...";
+                if (circle) {
+                    circle.textContent = "🌸";
+                    circle.classList.add('inhale');
+                }
+                
+                setTimeout(() => {
+                    if (text) text.textContent = "Sopre a velinha...";
+                    if (circle) {
+                        circle.textContent = "🕯️";
+                        circle.classList.remove('inhale');
+                    }
+                }, 3000);
+            }
+            
+            breathCycle();
+            breathInterval = setInterval(breathCycle, 6000); 
+        }
+
+        // --- LÓGICA: EMOÇÕES ---
+        function checkEmotion(emotion) {
+            const resp = document.getElementById('lumi-response');
+            if (!resp) return;
+            
+            resp.style.display = 'block';
+            if(emotion === 'feliz') {
+                resp.innerHTML = "Que legal! O Lumi também fica muito feliz em ver o seu sorriso! 💙";
+                resp.style.color = "#28a745";
+            } else if(emotion === 'triste') {
+                resp.innerHTML = "Tudo bem ficar triste às vezes. O Lumi está aqui para te dar um abraço virtual apertado! 🤗";
+                resp.style.color = "#1a4d8c";
+            } else if(emotion === 'medo') {
+                resp.innerHTML = "O hospital pode assustar um pouquinho, né? Mas você é muito corajoso(a) e o Lumi está segurando sua mãozinha! 🤝";
+                resp.style.color = "#d13a3a";
+            } else if(emotion === 'bravo') {
+                resp.innerHTML = "É chato ter que ficar aqui, eu sei. Que tal estourarmos umas bolhas na aba de jogos para soltar essa energia? 🫧";
+                resp.style.color = "#d97b14";
+            }
+        }
+
+        // --- LÓGICA: JOGOS (Bolhas) ---
+        let popped = 0;
+        function startGame() {
+            clearInterval(gameInterval);
+            const area = document.getElementById('game-area');
+            const scoreText = document.getElementById('game-score');
+            
+            if (!area || !scoreText) return;
+            
+            area.innerHTML = '';
+            popped = 0;
+            scoreText.textContent = "Toque nas bolhas para estourar! 🫧";
+
+            gameInterval = setInterval(() => {
+                if(area.children.length < 15) {
+                    createBubble();
+                }
+            }, 600);
+        }
+
+        function createBubble() {
+            const area = document.getElementById('game-area');
+            if (!area) return;
+            
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            
+            const size = Math.floor(Math.random() * 30) + 30;
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            bubble.style.left = Math.floor(Math.random() * 80) + 10 + '%';
+            bubble.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            
+            bubble.onclick = function() {
+                this.remove();
+                popped++;
+                const scoreText = document.getElementById('game-score');
+                if (scoreText) scoreText.textContent = `Bolhas estouradas: ${popped} 🎉`;
+                
+                const pop = document.createElement('div');
+                pop.textContent = "💥";
+                pop.style.position = 'absolute';
+                pop.style.left = this.style.left;
+                pop.style.top = this.style.top;
+                area.appendChild(pop);
+                setTimeout(() => pop.remove(), 200);
+            };
+
+            area.appendChild(bubble);
+            setTimeout(() => { if(bubble.parentElement) bubble.remove(); }, 6000);
+        }
+    </script>
+</body>
+</html>
