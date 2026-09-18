@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Afeto em Código - Lumi</title>
     
     <!-- Configurações para Instalação do Web App (PWA) e Ícones apontando para a pasta 'images' -->
@@ -13,11 +13,40 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Estilos Gerais */
+        /* Estilos Gerais e Correção de Responsividade */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: linear-gradient(135deg, #d3ebff 0%, #a6d5ff 100%); height: 100vh; display: flex; justify-content: center; align-items: center; color: #1a4d8c; overflow: hidden; }
         
-        .container { background-color: white; width: 100%; max-width: 450px; height: 90vh; border-radius: 30px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); overflow: hidden; position: relative; display: flex; flex-direction: column; }
+        body { 
+            background: linear-gradient(135deg, #d3ebff 0%, #a6d5ff 100%); 
+            min-height: 100vh;
+            min-height: 100dvh; /* Adapta-se dinamicamente às barras do celular */
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            color: #1a4d8c; 
+        }
+        
+        .container { 
+            background-color: white; 
+            width: 100%; 
+            max-width: 500px; /* Um pouco mais largo para acomodar tablets */
+            height: 100vh; 
+            height: 100dvh; /* Altura exata da tela no mobile */
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+        }
+        
+        /* Em PCs, o app vira um "cartão" centralizado com bordas. No celular, ocupa tudo. */
+        @media (min-width: 501px) {
+            .container {
+                height: 90vh;
+                border-radius: 30px;
+                overflow: hidden;
+            }
+        }
+
         .screen-content { padding: 20px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
         
         .screen { display: none; flex-direction: column; height: 100%; animation: fadeIn 0.4s ease-in-out; }
@@ -96,7 +125,7 @@
         .lumi-response { margin-top: 25px; padding: 20px; background: #f8fbff; border-radius: 15px; font-size: 18px; text-align: center; font-weight: bold; display: none; }
 
         /* Interação: Jogos (Bolhas) */
-        .game-area { position: relative; flex: 1; background: #fff; border-radius: 20px; border: 3px solid #ffc8ce; overflow: hidden; margin-top: 10px; }
+        .game-area { position: relative; flex: 1; background: #fff; border-radius: 20px; border: 3px solid #ffc8ce; overflow: hidden; margin-top: 10px; min-height: 250px; }
         .bubble { position: absolute; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 200, 206, 0.6)); border: 1px solid rgba(255, 200, 206, 0.8); cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 24px; animation: floatUp 4s infinite linear; }
         @keyframes floatUp { 0% { transform: translateY(100px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-300px); opacity: 0; } }
         .game-msg { text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 10px; }
