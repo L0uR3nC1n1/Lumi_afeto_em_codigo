@@ -59,9 +59,9 @@
         .screen.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Título alterado para vermelho por completo */
         .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { font-size: 36px; color: #0b458f; }
-        .header h1 span { color: #d13a3a; }
+        .header h1 { font-size: 36px; color: #d13a3a; } 
         .header p { font-size: 16px; margin-top: 8px; font-weight: 500; }
 
         .lumi-img { width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 6px solid #e1f0ff; box-shadow: 0 8px 25px rgba(0,0,0,0.1); margin: 0 auto; display: block; }
@@ -117,7 +117,8 @@
         <div id="screen-login" class="screen active">
             <div class="screen-content">
                 <div class="header">
-                    <h1><span>Afeto</span> em Código</h1>
+                    <!-- A tag <span> foi removida para que tudo fique na mesma cor -->
+                    <h1>Afeto em Código</h1>
                     <p>Pequenos momentos, grandes conquistas!</p>
                 </div>
                 
@@ -127,7 +128,6 @@
 
                 <div style="display: flex; flex-direction: column; gap: 20px;">
                     <input type="text" id="childName" placeholder="Como você se chama?" autocomplete="off">
-                    
                     <button class="btn-primary" onclick="goToBluetooth()">Começar <i class="fas fa-arrow-right"></i></button>
                 </div>
             </div>
