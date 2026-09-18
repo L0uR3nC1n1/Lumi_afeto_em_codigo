@@ -5,21 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Afeto em Código - Lumi</title>
     
-    <!-- Configurações para Instalação do Web App (PWA) e Ícones apontando para a pasta 'images' -->
+    <!-- Configurações para Instalação do Web App (PWA) e Ícones -->
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/jpeg" href="images/lumi_icon.jpeg">
     <link rel="apple-touch-icon" href="images/lumi_icon.jpeg">
-    <meta name="theme-color" content="#297be6">
+    <meta name="theme-color" content="#ffffff"> <!-- Cor do topo do navegador agora é branca -->
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Estilos Gerais e Correção de Responsividade */
+        /* Estilos Gerais - MOBILE FIRST (Padrão Celular) */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         body { 
-            background: linear-gradient(135deg, #d3ebff 0%, #a6d5ff 100%); 
+            background-color: #ffffff; /* Fundo 100% branco no celular */
             min-height: 100vh;
-            min-height: 100dvh; /* Adapta-se dinamicamente às barras do celular */
+            min-height: 100dvh;
             display: flex; 
             justify-content: center; 
             align-items: center; 
@@ -27,55 +27,68 @@
         }
         
         .container { 
-            background-color: white; 
+            background-color: #ffffff; 
             width: 100%; 
-            max-width: 500px; /* Um pouco mais largo para acomodar tablets */
+            max-width: 100%; /* Força a ocupar a largura total no celular */
             height: 100vh; 
-            height: 100dvh; /* Altura exata da tela no mobile */
+            height: 100dvh; /* Altura exata da tela */
             display: flex; 
             flex-direction: column; 
             position: relative; 
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+            box-shadow: none; /* Remove a sombra no mobile */
         }
         
-        /* Em PCs, o app vira um "cartão" centralizado com bordas. No celular, ocupa tudo. */
-        @media (min-width: 501px) {
+        /* Quando aberto no PC ou telas largas (maior que 768px), volta o fundo azul e formato de cartão */
+        @media (min-width: 768px) {
+            body { background: linear-gradient(135deg, #d3ebff 0%, #a6d5ff 100%); }
             .container {
+                max-width: 480px;
                 height: 90vh;
                 border-radius: 30px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
                 overflow: hidden;
             }
         }
 
-        .screen-content { padding: 20px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+        /* O conteúdo agora fica centralizado na vertical para aproveitar o espaço */
+        .screen-content { 
+            padding: 40px 25px; 
+            flex: 1; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+        }
         
         .screen { display: none; flex-direction: column; height: 100%; animation: fadeIn 0.4s ease-in-out; }
         .screen.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .header { text-align: center; margin-bottom: 20px; margin-top: 10px; }
-        .header h1 { font-size: 28px; color: #0b458f; }
+        /* Textos aumentados */
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { font-size: 36px; color: #0b458f; }
         .header h1 span { color: #d13a3a; }
+        .header p { font-size: 16px; margin-top: 8px; font-weight: 500; }
 
-        /* Identidade Visual - Imagem do Lumi */
+        /* Imagem do Lumi muito maior e centralizada */
         .lumi-img {
-            width: 140px;
-            height: 140px;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid #e1f0ff;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border: 6px solid #e1f0ff;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
             margin: 0 auto;
             display: block;
         }
 
         .lumi-img-small {
-            width: 80px;
-            height: 80px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
-            border: 3px solid #b3cbf2;
-            margin: 0 auto 15px auto;
+            border: 4px solid #b3cbf2;
+            margin: 0 auto 20px auto;
             display: block;
         }
 
@@ -83,19 +96,42 @@
         .pulse-animation { animation: pulse 2s infinite; }
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(74, 144, 226, 0.4); }
-            70% { box-shadow: 0 0 0 20px rgba(74, 144, 226, 0); }
+            70% { box-shadow: 0 0 0 25px rgba(74, 144, 226, 0); }
             100% { box-shadow: 0 0 0 0 rgba(74, 144, 226, 0); }
         }
 
-        /* Botões Base */
-        .btn-primary { background-color: #297be6; color: white; border: none; padding: 15px; border-radius: 25px; font-size: 18px; font-weight: bold; cursor: pointer; transition: transform 0.2s; margin-top: 10px; }
+        /* Botões Base mais largos e com fonte maior */
+        .btn-primary { 
+            background-color: #297be6; 
+            color: white; 
+            border: none; 
+            padding: 20px; 
+            border-radius: 30px; 
+            font-size: 20px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: transform 0.2s; 
+            margin-top: 15px; 
+        }
         .btn-primary:hover { transform: scale(1.02); }
         
+        /* Campo de texto (Input) maior */
+        input[type="text"] {
+            padding: 20px; 
+            border: 2px solid #e1f0ff; 
+            border-radius: 20px; 
+            font-size: 18px; 
+            text-align: center;
+            outline: none;
+            transition: border 0.3s;
+        }
+        input[type="text"]:focus { border-color: #4a90e2; }
+
         /* Navbar Superior (Voltar) */
-        .top-nav { display: flex; align-items: center; padding: 15px 20px; background-color: #f8fbff; border-bottom: 2px solid #e1f0ff; }
-        .back-btn { background: none; border: none; font-size: 16px; color: #1a4d8c; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .top-nav { display: flex; align-items: center; padding: 20px; background-color: #f8fbff; border-bottom: 2px solid #e1f0ff; }
+        .back-btn { background: none; border: none; font-size: 18px; color: #1a4d8c; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; }
         .back-btn:hover { color: #297be6; }
-        .nav-title { margin-left: auto; margin-right: auto; font-weight: bold; font-size: 18px; padding-right: 30px; }
+        .nav-title { margin-left: auto; margin-right: auto; font-weight: bold; font-size: 20px; padding-right: 30px; }
 
         /* Cores das Categorias */
         .bg-historias { background-color: #b3cbf2; } 
@@ -103,32 +139,46 @@
         .bg-emocoes { background-color: #fde8a1; }
         .bg-jogos { background-color: #ffc8ce; }
 
-        /* Menu Principal */
-        .menu-btn { display: flex; align-items: center; padding: 20px; border-radius: 20px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; transition: transform 0.2s; color: #1a4d8c; margin-bottom: 15px; text-align: left; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .menu-btn i { font-size: 24px; width: 40px; text-align: center; margin-right: 15px; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 50%; color: #1a4d8c; }
+        /* Menu Principal com botões maiores */
+        .menu-btn { 
+            display: flex; 
+            align-items: center; 
+            padding: 25px 20px; 
+            border-radius: 25px; 
+            border: none; 
+            font-size: 20px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: transform 0.2s; 
+            color: #1a4d8c; 
+            margin-bottom: 20px; 
+            text-align: left; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+        }
+        .menu-btn i { font-size: 28px; width: 45px; text-align: center; margin-right: 15px; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 50%; color: #1a4d8c; }
 
         /* Interação: História */
-        .story-container { text-align: center; padding: 20px; background: #fff; border-radius: 20px; border: 3px solid #b3cbf2; min-height: 250px; display: flex; flex-direction: column; justify-content: center; }
-        .story-text { font-size: 20px; font-weight: 500; line-height: 1.4; margin-bottom: 20px; }
+        .story-container { text-align: center; padding: 30px 20px; background: #fff; border-radius: 25px; border: 3px solid #b3cbf2; min-height: 300px; display: flex; flex-direction: column; justify-content: center; }
+        .story-text { font-size: 22px; font-weight: 500; line-height: 1.5; margin-bottom: 25px; }
         
         /* Interação: Respiração */
         .breathe-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
-        .breathe-circle { width: 150px; height: 150px; background-color: #bdf2c9; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 60px; transition: all 3s ease-in-out; margin: 40px 0; box-shadow: 0 0 20px rgba(189, 242, 201, 0.8); }
+        .breathe-circle { width: 180px; height: 180px; background-color: #bdf2c9; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 70px; transition: all 3s ease-in-out; margin: 50px 0; box-shadow: 0 0 25px rgba(189, 242, 201, 0.8); }
         .breathe-circle.inhale { transform: scale(1.8); background-color: #93e8a6; }
-        .breathe-text { font-size: 24px; font-weight: bold; text-align: center; }
+        .breathe-text { font-size: 28px; font-weight: bold; text-align: center; }
 
         /* Interação: Emoções */
-        .emotions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .emotion-btn { background: #fff; border: 3px solid #fde8a1; border-radius: 20px; padding: 20px 10px; font-size: 40px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .emotion-btn span { font-size: 16px; font-weight: bold; color: #1a4d8c; }
+        .emotions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px; }
+        .emotion-btn { background: #fff; border: 3px solid #fde8a1; border-radius: 20px; padding: 35px 10px; font-size: 50px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .emotion-btn span { font-size: 18px; font-weight: bold; color: #1a4d8c; }
         .emotion-btn:active { transform: scale(0.95); background: #fde8a1; }
-        .lumi-response { margin-top: 25px; padding: 20px; background: #f8fbff; border-radius: 15px; font-size: 18px; text-align: center; font-weight: bold; display: none; }
+        .lumi-response { margin-top: 30px; padding: 25px; background: #f8fbff; border-radius: 15px; font-size: 20px; text-align: center; font-weight: bold; display: none; line-height: 1.4; }
 
         /* Interação: Jogos (Bolhas) */
-        .game-area { position: relative; flex: 1; background: #fff; border-radius: 20px; border: 3px solid #ffc8ce; overflow: hidden; margin-top: 10px; min-height: 250px; }
-        .bubble { position: absolute; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 200, 206, 0.6)); border: 1px solid rgba(255, 200, 206, 0.8); cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 24px; animation: floatUp 4s infinite linear; }
-        @keyframes floatUp { 0% { transform: translateY(100px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-300px); opacity: 0; } }
-        .game-msg { text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+        .game-area { position: relative; flex: 1; background: #fff; border-radius: 25px; border: 3px solid #ffc8ce; overflow: hidden; margin-top: 10px; min-height: 300px; }
+        .bubble { position: absolute; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 200, 206, 0.6)); border: 1px solid rgba(255, 200, 206, 0.8); cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 30px; animation: floatUp 4s infinite linear; }
+        @keyframes floatUp { 0% { transform: translateY(100px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-400px); opacity: 0; } }
+        .game-msg { text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -137,19 +187,18 @@
         
         <!-- TELA 1: LOGIN -->
         <div id="screen-login" class="screen active">
-            <div class="screen-content" style="justify-content: center;">
+            <div class="screen-content">
                 <div class="header">
                     <h1><span>Afeto</span> em Código</h1>
                     <p>Pequenos momentos, grandes conquistas!</p>
                 </div>
                 
-                <!-- Imagem Oficial do Lumi no Login -->
-                <div style="text-align: center; margin-bottom: 30px;">
+                <div style="text-align: center; margin-bottom: 40px;">
                     <img src="images/lumi_icon.jpeg" alt="Lumi Robô" class="lumi-img">
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 15px;">
-                    <input type="text" id="childName" placeholder="Como você se chama?" style="padding: 15px; border: 2px solid #e1f0ff; border-radius: 15px; font-size: 16px;">
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <input type="text" id="childName" placeholder="Como você se chama?" autocomplete="off">
                     <button class="btn-primary" onclick="goToBluetooth()">Começar <i class="fas fa-arrow-right"></i></button>
                 </div>
             </div>
@@ -157,26 +206,25 @@
 
         <!-- TELA 2: BLUETOOTH -->
         <div id="screen-bluetooth" class="screen">
-            <div class="screen-content" style="align-items: center; justify-content: center; text-align: center;">
-                <h2>Conectar ao Lumi</h2>
+            <div class="screen-content" style="align-items: center; text-align: center;">
+                <h2 style="font-size: 28px; margin-bottom: 20px;">Conectar ao Lumi</h2>
                 
-                <!-- Imagem do Lumi pulsando simulando a conexão -->
-                <div style="margin: 40px 0;">
+                <div style="margin: 50px 0;">
                     <img src="images/lumi_icon.jpeg" alt="Lumi" class="lumi-img pulse-animation" id="bt-lumi-img">
                 </div>
                 
-                <p id="bt-status-text" style="font-size: 18px; margin-bottom: 20px;">Toque para buscar o robô Lumi.</p>
+                <p id="bt-status-text" style="font-size: 20px; margin-bottom: 30px;">Toque para buscar o robô Lumi.</p>
                 <button class="btn-primary" id="bt-btn" onclick="simulateConnection()" style="width: 100%;">Parear</button>
             </div>
         </div>
 
         <!-- TELA 3: MENU PRINCIPAL -->
         <div id="screen-menu" class="screen">
-            <div class="screen-content">
-                <div class="header" style="margin-bottom: 10px;">
-                    <h2 style="font-size: 24px;">Lumi</h2>
+            <div class="screen-content" style="justify-content: flex-start; padding-top: 50px;">
+                <div class="header" style="margin-bottom: 15px;">
+                    <h2 style="font-size: 30px;">Lumi</h2>
                 </div>
-                <div style="text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 25px;">
+                <div style="text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 40px;">
                     <i class="far fa-smile" style="color: #4a90e2;"></i> Olá, <span id="display-name">Amiguinho</span>!<br>O que vamos fazer hoje?
                 </div>
                 
@@ -201,12 +249,11 @@
                 <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Voltar</button>
                 <div class="nav-title">História do Lumi</div>
             </div>
-            <div class="screen-content" style="justify-content: center;">
+            <div class="screen-content">
                 <div class="story-container">
-                    <!-- Imagem do Lumi contando a história -->
                     <img src="images/lumi_icon.jpeg" alt="Lumi" class="lumi-img-small" id="story-img">
                     <div class="story-text" id="story-text">O Lumi também já precisou vir ao hospital para cuidar de sua bateria.</div>
-                    <button class="btn-primary" onclick="nextStory()" style="background-color: #5b8add;">Próxima Página</button>
+                    <button class="btn-primary" onclick="nextStory()" style="background-color: #5b8add; width: 100%;">Próxima Página</button>
                 </div>
             </div>
         </div>
@@ -221,7 +268,7 @@
                 <div class="breathe-container">
                     <div class="breathe-text" id="breathe-instruction">Siga o Lumi!</div>
                     <div class="breathe-circle" id="breathe-circle">🌸</div>
-                    <button class="btn-primary" id="btn-start-breathe" onclick="startBreathing()" style="background-color: #4CAF50;">Iniciar Respiração</button>
+                    <button class="btn-primary" id="btn-start-breathe" onclick="startBreathing()" style="background-color: #4CAF50; width: 100%;">Iniciar Respiração</button>
                 </div>
             </div>
         </div>
@@ -232,8 +279,8 @@
                 <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Voltar</button>
                 <div class="nav-title">Como se sente?</div>
             </div>
-            <div class="screen-content">
-                <h3 style="text-align: center; color: #b89c25; margin-top: 10px;">Toque no rostinho:</h3>
+            <div class="screen-content" style="justify-content: flex-start;">
+                <h3 style="text-align: center; color: #b89c25; margin-top: 20px; font-size: 24px;">Toque no rostinho:</h3>
                 <div class="emotions-grid">
                     <button class="emotion-btn" onclick="checkEmotion('feliz')">😁 <span>Feliz</span></button>
                     <button class="emotion-btn" onclick="checkEmotion('triste')">😢 <span>Triste</span></button>
@@ -251,9 +298,9 @@
                 <div class="nav-title">Estoure as Bolhas</div>
             </div>
             <div class="screen-content" style="display: flex; flex-direction: column;">
-                <div class="game-msg" id="game-score">Toque nas bolhas para estourar! 🧼</div>
+                <div class="game-msg" id="game-score">Toque nas bolhas para estourar! 🫧</div>
                 <div class="game-area" id="game-area"></div>
-                <button class="btn-primary" onclick="startGame()" style="background-color: #e57373; margin-top: 15px;">Jogar Novamente</button>
+                <button class="btn-primary" onclick="startGame()" style="background-color: #e57373; margin-top: 20px;">Jogar Novamente</button>
             </div>
         </div>
 
@@ -432,7 +479,7 @@
             const bubble = document.createElement('div');
             bubble.classList.add('bubble');
             
-            const size = Math.floor(Math.random() * 30) + 30;
+            const size = Math.floor(Math.random() * 40) + 40;
             bubble.style.width = size + 'px';
             bubble.style.height = size + 'px';
             bubble.style.left = Math.floor(Math.random() * 80) + 10 + '%';
